@@ -2,6 +2,12 @@ import Link from "next/link";
 import { allTools } from "@/lib/tools/index";
 import { notFound } from "next/navigation";
 
+export function generateStaticParams() {
+  return ["agriculture", "construction", "manufacturing", "animal-care"].map((category) => ({
+    category,
+  }));
+}
+
 export default function CategoryPage({ params }: { params: { category: string } }) {
   const tools = allTools().filter((t) => t.category === params.category);
   if (tools.length === 0) notFound();
