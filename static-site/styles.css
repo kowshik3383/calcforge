@@ -106,3 +106,9 @@ footer input:focus-visible {outline-color:var(--white)}
 @media (forced-colors:active) {
   .btn,.nav [aria-current=page] {border:2px solid ButtonText}
 }
+
+.guide-categories {display:flex;flex-wrap:wrap;gap:.5rem 1rem;list-style:none;padding:0}
+.guide-categories a {display:inline-flex;align-items:center;min-height:44px}
+.guide-group {margin-block:3rem;scroll-margin-top:1rem}
+.guide-group h2 {font-size:clamp(1.8rem,4vw,3rem)}
+.guide-group h3 a {line-height:1.15}
