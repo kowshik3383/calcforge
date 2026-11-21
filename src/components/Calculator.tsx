@@ -89,7 +89,7 @@ export default function Calculator({ slug, config }: Props) {
                     type="number"
                     min={f.min}
                     max={f.max}
-                    step={f.step}
+                    step={f.step ?? "any"}
                     value={String(inputs[f.key] ?? "")}
                     onChange={(e) => setField(f.key, Number(e.target.value))}
                     className="input-field"

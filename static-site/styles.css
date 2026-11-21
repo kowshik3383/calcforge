@@ -112,3 +112,8 @@ footer input:focus-visible {outline-color:var(--white)}
 .guide-group {margin-block:3rem;scroll-margin-top:1rem}
 .guide-group h2 {font-size:clamp(1.8rem,4vw,3rem)}
 .guide-group h3 a {line-height:1.15}
+
+.catalog-list {columns:3;column-gap:2rem}
+.catalog-list li {break-inside:avoid;padding-block:.4rem}
+@media (max-width:900px) {.catalog-list {columns:2}}
+@media (max-width:520px) {.catalog-list {columns:1}}

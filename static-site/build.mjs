@@ -1,3 +1,4 @@
+import { generateCatalog } from "./build-catalog.mjs";
 import { cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -30,4 +31,5 @@ for (const name of await readdir(source)) {
   await writeFile(join(output, name), content);
 }
 for (const name of assets) await cp(join(source, name), join(output, name));
+await generateCatalog(output, base);
 console.log(`Built CalcForge for ${base}`);

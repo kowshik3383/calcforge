@@ -4,7 +4,7 @@ A vanilla HTML, CSS, and JavaScript site for growers, tradespeople, and DIY proj
 
 ## Open locally
 
-Extract the ZIP and open `index.html` for a quick look. For consistent storage behavior, run `python3 -m http.server 8000` from this directory and open http://localhost:8000. No install or build step is required.
+From this directory, run `SITE_URL=https://calcforge.test node build.mjs` with Node.js 22.15+ or 24. Then run `python3 -m http.server 8000 --directory dist` and open http://localhost:8000. The build generates a page for each calculator so the full catalog and sitemap are available. Run `node test-catalog.mjs` to verify the registry and worked examples.
 
 ## Change the visuals
 
@@ -25,5 +25,5 @@ The homepage hero and calculator illustrations are original inline SVGs. Find th
 - The newsletter saves one email in the current browser and offers a local delete control. Connect an email provider for subscriptions and confirmation emails.
 - Contact generates a downloadable draft and needs a real feedback endpoint for message delivery.
 - The documented builds replace the sample domain. Review the privacy and terms copy against your actual hosting and data flows.
-- The standalone site ships the two requested calculators. It does not import the existing Next.js calculator catalog.
+- The standalone site and Next.js share the 107-tool registry under `static-site/catalog`. The calculators page also retains its two featured forms.
 - An optional `calcforge:calculation` event exposes the tool ID to an analytics integration. No tracker is installed.

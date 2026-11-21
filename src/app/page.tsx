@@ -3,6 +3,12 @@ import { allTools } from "@/lib/tools/index";
 
 const CATEGORIES = [
   {
+    key: "conversions",
+    label: "Units and conversions",
+    description: "Area, volume, distance, and flow conversions.",
+    tools: allTools().filter((t) => t.category === "conversions"),
+  },
+  {
     key: "agriculture",
     label: "Agriculture & farming",
     description: "Feed, grain, fertilizer, irrigation, livestock.",

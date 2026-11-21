@@ -3,13 +3,14 @@ import { allTools } from "@/lib/tools/index";
 import { notFound } from "next/navigation";
 
 export function generateStaticParams() {
-  return ["agriculture", "construction", "manufacturing", "animal-care"].map((category) => ({
+  return [...new Set(allTools().map(tool => tool.category))].map((category) => ({
     category,
   }));
 }
 
-export default function CategoryPage({ params }: { params: { category: string } }) {
-  const tools = allTools().filter((t) => t.category === params.category);
+export default async function CategoryPage({ params }: { params: Promise<{ category: string }> }) {
+  const { category } = await params;
+  const tools = allTools().filter((t) => t.category === category);
   if (tools.length === 0) notFound();
 
   return (
@@ -18,7 +19,7 @@ export default function CategoryPage({ params }: { params: { category: string } 
         <Link href="/" className="nav-link">&larr; Back to home</Link>
       </nav>
       <div className="section-head mb-12">
-        <h1 className="section-title">{params.category}</h1>
+        <h1 className="section-title">{category}</h1>
         <p className="section-subtitle">{tools.length} free tools</p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
