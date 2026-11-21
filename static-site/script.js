@@ -126,15 +126,20 @@ if (filters) {
   const category = document.querySelector("#category");
   const status = document.querySelector("#guide-status");
   const guides = [...document.querySelectorAll("#guides article")];
+  const groups = [...document.querySelectorAll("[data-guide-group]")];
+  const keywords = guides.map((guide) =>
+    `${guide.textContent} ${guide.dataset.search || ""}`.toLowerCase()
+  );
   function filterGuides() {
     const terms = search.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
     let visible = 0;
-    guides.forEach((guide) => {
-      const copy = guide.textContent.toLowerCase();
+    guides.forEach((guide, index) => {
+      const copy = keywords[index];
       guide.hidden = (category.value && category.value !== guide.dataset.category)
         || terms.some((term) => !copy.includes(term));
       if (!guide.hidden) visible += 1;
     });
+    groups.forEach((group) => { group.hidden = !group.querySelector('article:not([hidden])'); });
     status.textContent = visible
       ? `${visible} ${visible === 1 ? "guide" : "guides"} found.`
       : "No guides match. Try fewer words or choose All categories.";
@@ -142,6 +147,13 @@ if (filters) {
   filters.hidden = false;
   search.addEventListener("input", filterGuides);
   category.addEventListener("change", filterGuides);
+  document.querySelectorAll('.guide-categories a').forEach((link) => {
+    link.addEventListener('click', () => {
+      category.value = '';
+      search.value = '';
+      filterGuides();
+    });
+  });
   filterGuides();
 }
 

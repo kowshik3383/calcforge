@@ -12,6 +12,10 @@ The homepage hero and calculator illustrations are original inline SVGs. Find th
 
 ## Deploy
 
+**Vercel.** Import the repository with `main` as the production branch and `static-site` as Root Directory. Use the build command and output directory defined by `vercel.json` (`node build.mjs` and `dist`) and remove any previous blank build override. With system variables exposed, `VERCEL_PROJECT_PRODUCTION_URL` supplies the canonical host. If you use a custom domain, set `SITE_URL` to that full HTTPS URL before deploying. After publishing, submit the deployed `/sitemap.xml` in Google Search Console.
+
+**Branch or folder hosting**
+
 1. From the repository root, run `python3 static-site/prepare_deploy.py YOUR_PUBLIC_HTTPS_URL publish`. Supply the full public URL, including the project path for GitHub Pages. This generates a new publish directory with matching canonical URLs, social metadata, sitemap, and links on the 404 page.
 2. **GitHub Pages.** Copy the contents of `publish` to the publishing branch root or its `docs` folder. In Settings → Pages, select that branch and folder. Include the hidden `.nojekyll` file. If the project lives below a subpath, submit its sitemap directly because crawlers look for robots.txt at the origin root.
 3. **Netlify.** Deploy the generated `publish` directory. For manual deployment, drop it into the Netlify dashboard. For continuous deployment, set the build command to the command in step 1 and use `publish` as the publish directory. Check the homepage and a nested missing URL after deployment.
@@ -20,6 +24,6 @@ The homepage hero and calculator illustrations are original inline SVGs. Find th
 
 - The newsletter saves one email in the current browser and offers a local delete control. Connect an email provider for subscriptions and confirmation emails.
 - Contact generates a downloadable draft and needs a real feedback endpoint for message delivery.
-- Replace the sample domain and review the privacy and terms copy against your actual hosting and data flows.
+- The documented builds replace the sample domain. Review the privacy and terms copy against your actual hosting and data flows.
 - The standalone site ships the two requested calculators. It does not import the existing Next.js calculator catalog.
 - An optional `calcforge:calculation` event exposes the tool ID to an analytics integration. No tracker is installed.
