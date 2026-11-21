@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Field and material calculators | CalcForge</title>
+<meta name="description" content="Convert rectangular field area and estimate flooring pack quantities.">
+<link rel="canonical" href="https://kowshik3383.github.io/calcforge/calculators.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Field and material calculators | CalcForge">
+<meta property="og:description" content="Convert rectangular field area and estimate flooring pack quantities.">
+<meta property="og:url" content="https://kowshik3383.github.io/calcforge/calculators.html">
+<meta property="og:image" content="https://kowshik3383.github.io/calcforge/social.png">
+<meta property="og:image:alt" content="CalcForge wordmark beside a mint calculator">
+
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "name": "Field and material calculators", "description": "Convert rectangular field area and estimate flooring pack quantities.", "url": "https://kowshik3383.github.io/calcforge/calculators.html", "isPartOf": {"@type": "WebSite", "name": "CalcForge", "url": "https://kowshik3383.github.io/calcforge"}}</script>
+<script src="script.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+<header class="top"><nav class="wrap nav" aria-label="Main navigation"><a class="logo" href="index.html"><span aria-hidden="true">✳</span> CalcForge</a><button class="btn outline" id="menu-toggle" aria-controls="main-menu" aria-expanded="false" hidden>Menu</button><ul id="main-menu"><li><a href="index.html">Home</a></li><li><a href="calculators.html" aria-current="page">Calculators</a></li><li><a href="blog.html">Guides</a></li><li><a href="about.html">About</a></li><li><a href="contact.html">Contact</a></li></ul></nav></header>
+<main id="content" tabindex="-1"><section class="section wrap"><span class="tag">[01] FREE CALCULATORS</span><h1 class="page-title">The <em>toolbox.</em></h1>
+<p class="intro">Two free calculators for estimating area and planning a materials order.</p>
+<div class="grid">
+<article class="card feature" id="field"><!-- Image slot. Replace with an overhead photo of a rectangular field. --><svg class="icon" role="img" aria-label="Rows of crops inside a rectangular plot" viewBox="0 0 80 74" fill="none" stroke="#142744" stroke-width="3" stroke-linecap="round"><rect x="6" y="12" width="68" height="49" rx="10" fill="#b7f1d4"/><path d="M17 49l14-25m-2 25l14-25m-2 25l14-25m-2 25l14-25"/></svg><h2 class="page-title">Field area</h2><p>For a rectangular plot. Enter both sides in metres.</p>
+<form data-calculator="field"><fieldset disabled><div class="field"><label for="length">Length (m)</label><input id="length" name="length" type="number" inputmode="decimal" min="0.001" max="1000000" step="any" placeholder="120" required aria-describedby="length-error"><p class="error" id="length-error"></p></div><div class="field"><label for="width">Width (m)</label><input id="width" name="width" type="number" inputmode="decimal" min="0.001" max="1000000" step="any" placeholder="80" required aria-describedby="width-error"><p class="error" id="width-error"></p></div>
+<button class="btn">Calculate area</button></fieldset></form><div class="result" id="field-result" role="status">Your area will appear here.</div><details><summary>Formula and example</summary><p>Length × width gives square metres. Divide by 10,000 for hectares or by 4,046.8564224 for acres. A 120 m × 80 m plot is 9,600 m², or 0.96 ha.</p></details></article>
+<article class="card" id="material"><!-- Image slot. Replace with a stack of square tile samples on a workbench. --><svg class="icon" role="img" aria-label="Three overlapping square floor tiles" viewBox="0 0 80 74" fill="none" stroke="#142744" stroke-width="3" stroke-linecap="round"><rect x="7" y="25" width="45" height="40" rx="5" fill="#edf3ff"/><rect x="17" y="15" width="45" height="40" rx="5" fill="#d1dbff"/><rect x="27" y="5" width="45" height="40" rx="5" fill="#b7f1d4"/></svg><h2 class="page-title">Material estimate</h2><p>Use the actual floor area and coverage printed on one pack.</p>
+<form data-calculator="material"><fieldset disabled><div class="field"><label for="area">Floor area (m²)</label><input id="area" name="area" type="number" inputmode="decimal" min="0.001" max="1000000" step="any" placeholder="24" required aria-describedby="area-error"><p class="error" id="area-error"></p></div><div class="field"><label for="coverage">Coverage per pack (m²)</label><input id="coverage" name="coverage" type="number" inputmode="decimal" min="0.001" max="1000000" step="any" placeholder="2.2" required aria-describedby="coverage-error"><p class="error" id="coverage-error"></p></div><div class="field"><label for="waste">Waste allowance (%)</label><input id="waste" name="waste" type="number" inputmode="decimal" min="0" max="100" step="any" placeholder="10" required aria-describedby="waste-error"><p class="error" id="waste-error"></p></div>
+<button class="btn">Estimate packs</button></fieldset></form><div class="result" id="material-result" role="status">Your pack estimate will appear here.</div><details><summary>Formula and example</summary><p>Multiply the floor area by (1 + waste ÷ 100), divide by pack coverage, then round up to a whole pack. For 24 m², 10% allowance, and 2.2 m² per pack, the estimate is 12 packs.</p></details></article></div>
+<noscript><p>Enable JavaScript to calculate results, or use the formulas above.</p></noscript></section></main>
+<footer><div class="wrap"><div class="footer-grid"><div><a class="logo" href="index.html"><span aria-hidden="true">✳</span> CalcForge</a><h3>New tools by email</h3><p>Preview the signup by saving your email on this device. Email delivery is pending.</p><form data-newsletter><fieldset disabled><div class="field"><label for="newsletter-email">Email address</label><input id="newsletter-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required aria-describedby="newsletter-email-error"><p class="error" id="newsletter-email-error"></p></div><button class="btn mint">Save email</button> <button type="button" class="btn outline" data-clear-email hidden>Clear saved email</button><p data-news-status role="status"></p></fieldset></form></div>
+<div><h3>Explore</h3><a href="calculators.html">Calculators</a><br><a href="blog.html">Guides</a><br><a href="faq.html">FAQ</a></div><div><h3>Information</h3><a href="contact.html">Contact</a><br><a href="privacy.html">Privacy</a><br><a href="terms.html">Terms</a></div></div><div class="wordmark" aria-hidden="true">CALCFORGE</div></div><div class="checker" aria-hidden="true"></div></footer>
+<div class="toast" role="status" id="toast"></div>
+</body>
+</html>

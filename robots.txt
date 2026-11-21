@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://kowshik3383.github.io/calcforge/sitemap.xml
