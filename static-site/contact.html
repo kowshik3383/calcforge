@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact and tool feedback | CalcForge</title>
+<meta name="description" content="Draft CalcForge feedback, report an unexpected result, or suggest a calculator.">
+<link rel="canonical" href="https://example.com/contact.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Contact and tool feedback | CalcForge">
+<meta property="og:description" content="Draft CalcForge feedback, report an unexpected result, or suggest a calculator.">
+<meta property="og:url" content="https://example.com/contact.html">
+<meta property="og:image" content="https://example.com/social.png">
+<meta property="og:image:alt" content="CalcForge wordmark beside a mint calculator">
+
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "name": "Contact and tool feedback", "description": "Draft CalcForge feedback, report an unexpected result, or suggest a calculator.", "url": "https://example.com/contact.html", "isPartOf": {"@type": "WebSite", "name": "CalcForge", "url": "https://example.com"}}</script>
+<script src="script.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+<header class="top"><nav class="wrap nav" aria-label="Main navigation"><a class="logo" href="index.html"><span aria-hidden="true">✳</span> CalcForge</a><button class="btn outline" id="menu-toggle" aria-controls="main-menu" aria-expanded="false" hidden>Menu</button><ul id="main-menu"><li><a href="index.html">Home</a></li><li><a href="calculators.html">Calculators</a></li><li><a href="blog.html">Guides</a></li><li><a href="about.html">About</a></li><li><a href="contact.html" aria-current="page">Contact</a></li></ul></nav></header>
+<main id="content" tabindex="-1"><section class="section wrap"><span class="tag">[01] CALCFORGE</span><h1 class="page-title">Tell us what <em>needs work.</em></h1>
+<div class="prose"><p>Suggest a calculator or report a result you couldn’t reproduce. Include the tool name and an example with units.</p>
+<form data-contact><fieldset disabled><div class="field"><label for="contact-email">Reply email</label><input id="contact-email" name="email" type="email" autocomplete="email" required aria-describedby="contact-email-error"><p class="error" id="contact-email-error"></p></div>
+<div class="field"><label for="contact-message">Message</label><textarea id="contact-message" name="message" required minlength="10" maxlength="2000" aria-describedby="contact-message-error"></textarea><p class="error" id="contact-message-error"></p></div>
+<button class="btn">Review draft</button></fieldset></form>
+<p>The form prepares a downloadable draft in your browser. It does not send email.</p></div>
+<dialog id="contact-preview" aria-labelledby="preview-title"><h2 id="preview-title">Feedback draft</h2><label for="draft">Draft contents</label><textarea id="draft" readonly></textarea><p><a class="btn" id="download-draft" download="calcforge-feedback.txt">Download draft</a></p><form method="dialog"><button class="btn outline" autofocus>Close</button></form></dialog>
+</section></main>
+<footer><div class="wrap"><div class="footer-grid"><div><a class="logo" href="index.html"><span aria-hidden="true">✳</span> CalcForge</a><h3>New tools by email</h3><p>Preview the signup by saving your email on this device. Email delivery is pending.</p><form data-newsletter><fieldset disabled><div class="field"><label for="newsletter-email">Email address</label><input id="newsletter-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required aria-describedby="newsletter-email-error"><p class="error" id="newsletter-email-error"></p></div><button class="btn mint">Save email</button> <button type="button" class="btn outline" data-clear-email hidden>Clear saved email</button><p data-news-status role="status"></p></fieldset></form></div>
+<div><h3>Explore</h3><a href="calculators.html">Calculators</a><br><a href="blog.html">Guides</a><br><a href="faq.html">FAQ</a></div><div><h3>Information</h3><a href="contact.html">Contact</a><br><a href="privacy.html">Privacy</a><br><a href="terms.html">Terms</a></div></div><div class="wordmark" aria-hidden="true">CALCFORGE</div></div><div class="checker" aria-hidden="true"></div></footer>
+<div class="toast" role="status" id="toast"></div>
+</body>
+</html>
