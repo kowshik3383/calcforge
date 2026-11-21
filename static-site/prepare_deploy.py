@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 import re
 import shutil
+import subprocess
 from urllib.parse import urlsplit
 
 parser = argparse.ArgumentParser(description=__doc__)
@@ -47,5 +48,7 @@ for name in ("robots.txt", "sitemap.xml"):
 
 for name in (".nojekyll", "favicon.svg", "script.js", "social.png", "styles.css"):
     shutil.copyfile(source / name, output / name)
+
+subprocess.run(["node", str(source / "build-catalog.mjs"), str(output), site_url], check=True)
 
 print(f"Prepared {output} for {site_url}")
