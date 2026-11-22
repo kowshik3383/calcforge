@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { CalculatorAd } from "../../../lib/ads";
+import { guidesForTool } from "../../../lib/pages";
 import { GeneratedCalculator } from "../../../lib/generated-calculator";
 import { Schemas } from "../../../lib/legacy-content";
 import { BuyingGuides, CalculatorForm } from "../../../lib/calculator-form";
@@ -33,6 +34,7 @@ export default async function Calculator({ params }: Props) {
   const items = [home, categoriesCrumb,
     { name: category.title, path: `/categories/${tool.category}` }, { name: tool.title, path }];
   const related = tool.relatedTools.flatMap(slug => tools.find(item => item.slug === slug) ?? []);
+  const guides = guidesForTool(tool.slug);
   return <PageShell items={items}>
     <Schemas values={[
       JSON.stringify({ "@context": "https://schema.org", "@type": "WebApplication",
@@ -62,6 +64,10 @@ export default async function Calculator({ params }: Props) {
       <p><a href="/blog">Browse measurement and estimating guides</a></p>
       <p><small>Also searched as: {tool.alsoSearchedAs.join(", ")}</small></p>
     </div>
+    {guides.length > 0 && <section className="prose" data-related-guides>
+      <h2>Related measurement guides</h2>
+      <ul>{guides.map(guide => <li key={guide.path}><a href={guide.path}>{guide.title}</a></li>)}</ul>
+    </section>}
     {!tool.model && <script type="module" src="/catalog-form.mjs" />}
   </PageShell>;
 }

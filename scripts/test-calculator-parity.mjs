@@ -92,6 +92,19 @@ try {
     args: ["--no-sandbox"] });
   const context = await browser.newContext({ locale: "en-IN" });
   await context.route(/^https?:\/\/(?!127\.0\.0\.1:)/, route => route.abort());
+  const catalog = await context.newPage();
+  await catalog.goto(next.origin + "/calculators");
+  const search = catalog.getByRole("searchbox", { name: "Search calculators" });
+  await search.fill("flooring");
+  const visibleTools = catalog.locator("#catalog li:visible");
+  assert.ok(await visibleTools.count() > 0, "Flooring should match calculator pages.");
+  assert.equal(await visibleTools.filter({ hasText: /grain/i }).count(), 0);
+  await search.fill("zzzz-no-calculator");
+  assert.equal(await visibleTools.count(), 0);
+  await search.fill("");
+  assert.ok(await visibleTools.count() >= ALL_TOOLS.length);
+  await catalog.close();
+
   const jobs = ALL_TOOLS.map(tool => ({
     name: tool.slug, path: "/tools/" + tool.slug, form: "#tool-form",
     result: "#tool-result", samples: samples(tool),

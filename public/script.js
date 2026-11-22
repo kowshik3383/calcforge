@@ -157,57 +157,30 @@ if (filters) {
   filterGuides();
 }
 
-const newsletter = document.querySelector("[data-newsletter]");
-const newsletterStatus = newsletter.querySelector("[data-news-status]");
-const clearEmail = newsletter.querySelector("[data-clear-email]");
-const emailKey = "calcforge.newsletter";
-try {
-  if (localStorage.getItem(emailKey)) {
-    clearEmail.hidden = false;
-    newsletterStatus.textContent = "An email is saved in this browser.";
-  }
-} catch {
-  newsletterStatus.textContent = "Email storage is unavailable in this browser.";
-}
-bindForm(newsletter, (data) => {
-  try {
-    localStorage.setItem(emailKey, data.get("email").trim());
-    newsletter.reset();
-    clearEmail.hidden = false;
-    newsletterStatus.textContent = "Email saved in this browser.";
-    notify("Newsletter preview saved.");
-  } catch {
-    newsletterStatus.textContent = "Email could not be saved. Check whether browser storage is enabled.";
-  }
-});
-clearEmail.addEventListener("click", () => {
-  try {
-    localStorage.removeItem(emailKey);
-    newsletter.querySelector("input").focus();
-    clearEmail.hidden = true;
-    newsletterStatus.textContent = "Saved email removed.";
-  } catch {
-    newsletterStatus.textContent = "The saved email could not be removed.";
-  }
-});
-
-const contact = document.querySelector("[data-contact]");
-if (contact) {
-  const dialog = document.querySelector("#contact-preview");
-  const draft = document.querySelector("#draft");
-  const download = document.querySelector("#download-draft");
-  let draftUrl;
-  bindForm(contact, (data) => {
-    draft.value = `Reply email: ${data.get("email").trim()}\n\n${data.get("message").trim()}\n`;
-    if (draftUrl) URL.revokeObjectURL(draftUrl);
-    draftUrl = URL.createObjectURL(new Blob([draft.value], { type: "text/plain;charset=utf-8" }));
-    download.href = draftUrl;
-    dialog.showModal();
-  });
-  dialog.addEventListener("close", () => {
-    URL.revokeObjectURL(draftUrl);
-    draftUrl = undefined;
-    download.removeAttribute("href");
-    draft.value = "";
+const catalogFilter = document.querySelector("[data-catalog-filter]");
+if (catalogFilter) {
+  const input = catalogFilter.querySelector("input");
+  const status = catalogFilter.querySelector('[role="status"]');
+  const groups = [...document.querySelectorAll("#catalog .guide-group")].map(section => ({
+    section,
+    items: [...section.querySelectorAll("li")].map(item => ({
+      item,
+      keywords: (item.textContent + " " + item.querySelector("a").dataset.search).toLowerCase(),
+    })),
+  }));
+  catalogFilter.hidden = false;
+  input.addEventListener("input", () => {
+    const terms = input.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    let count = 0;
+    for (const { section, items } of groups) {
+      let visible = 0;
+      for (const { item, keywords } of items) {
+        item.hidden = !terms.every(term => keywords.includes(term));
+        if (!item.hidden) visible++;
+      }
+      section.hidden = visible === 0;
+      count += visible;
+    }
+    status.textContent = count ? `${count} matching calculators` : "No matching calculators.";
   });
 }

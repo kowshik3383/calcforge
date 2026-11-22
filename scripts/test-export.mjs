@@ -26,6 +26,7 @@ const descriptions = new Set();
 const legacy = new Set(inventory.map(path => path.replace(/\.html$/, "")));
 let toolCount = 0;
 let articleCount = 0;
+let reciprocalLinks = 0;
 for (const url of published) {
   const path = new URL(url).pathname;
   const $ = load(await readFile(path === "/" ? "out/index.html" : `out${path}.html`, "utf8"));
@@ -56,6 +57,16 @@ for (const url of published) {
   }
   if (path.startsWith("/tools/")) {
     toolCount++;
+    const slots = $("main .calculator-ad ins.adsbygoogle");
+    const slot = process.env.ADSENSE_TOOL_SLOT;
+    assert.equal(slots.length, slot ? 1 : 0, url);
+    if (slot) assert.equal(slots.attr("data-ad-slot"), slot, url);
+    for (const guide of $("[data-related-guides] a").toArray()) {
+      const guidePath = $(guide).attr("href");
+      const guidePage = load(await readFile(`out${guidePath}.html`, "utf8"));
+      assert.ok(guidePage(`main a[href="${path}"]`).length, `Missing calculator link back from ${guidePath} to ${path}`);
+      reciprocalLinks++;
+    }
     if (legacy.has(path)) assert.equal($("#tool-form").attr("data-tool"), path.split("/").at(-1), url);
     assert.ok(types.includes("WebApplication") && types.includes("FAQPage"), url);
     assert.ok($("[data-tool-editorial] h2").toArray().some(heading => $(heading).text() === "Related calculators"), url);
@@ -66,6 +77,7 @@ for (const url of published) {
     assert.ok(words >= 300 && words <= 600, `Word count ${words}: ${url}`);
   }
 }
+assert.ok(reciprocalLinks > 0, "No contextual calculator-to-guide links");
 assert.deepEqual(redirects.get("/index.html"), { to: "/", status: 301 });
 assert.equal(await readFile("out/google017a65e37914063f.html", "utf8"),
   await readFile("public/google017a65e37914063f.html", "utf8"));

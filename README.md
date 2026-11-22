@@ -23,3 +23,21 @@ For a conversion, add a row to `conversions` in [lib/tools.ts](lib/tools.ts) wit
 The exported pages include the existing publisher tag, an `ads.txt` entry, and a privacy disclosure. Set the GitHub Actions variable `ADSENSE_TOOL_SLOT` to the AdSense unit ID to render slots after calculator results. Slots request ads when they approach the viewport. Publish the EU and UK consent message in Google AdSense **Privacy & messaging** and confirm it appears on the live address. Review Auto ads settings if you want only the manually positioned slots.
 
 See the [migration checklist](migration/README.md) for tests, redirect coverage, and release checks.
+
+## Search performance
+
+Export **Performance → Search results** as CSV from the Search Console property for
+`https://measureforge.pages.dev`. Build the site, then run
+`python3 scripts/search-priorities.py /path/to/Pages.csv`. The report ranks published
+calculator pages by impressions and includes clicks and CTR. In Search Console,
+filter by each promising page to see its queries. Use the query data and [content plan](docs/calculator-content-plan.md)
+to choose guides or page improvements. Use the Pages report and sitemap submission
+status to check indexing separately.
+
+## Feedback and updates
+
+Set the GitHub Actions variable `CONTACT_EMAIL` to a public feedback inbox and
+`NEWSLETTER_SIGNUP_URL` to an HTTPS signup page from your mailing provider. Run the
+deployment workflow after changing variables. Without these settings, visitors
+can report issues on GitHub or follow the project's releases feed. Publish a
+GitHub release when you want to notify feed subscribers.

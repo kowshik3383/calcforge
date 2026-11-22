@@ -28,9 +28,13 @@ jobs:
         run: npm run build
         env:
           ADSENSE_TOOL_SLOT: ${{ vars.ADSENSE_TOOL_SLOT }}
+          CONTACT_EMAIL: ${{ vars.CONTACT_EMAIL }}
+          NEWSLETTER_SIGNUP_URL: ${{ vars.NEWSLETTER_SIGNUP_URL }}
 
       - name: Verify exported URLs and metadata
         run: node scripts/test-export.mjs
+        env:
+          ADSENSE_TOOL_SLOT: ${{ vars.ADSENSE_TOOL_SLOT }}
 
       - name: Deploy to Cloudflare Pages
         run: npx --yes wrangler@4.166.0 pages deploy out --project-name=measureforge --branch=main
