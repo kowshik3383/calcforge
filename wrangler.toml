@@ -1,4 +1,4 @@
-name = "calcforge"
+name = "calcforge-kowshik3383"
 compatibility_date = "2026-01-01"
 pages_build_output_dir = "./static-site/dist"
 [observability]
