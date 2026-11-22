@@ -1,5 +1,6 @@
+import { stripTypeScriptTypes } from "node:module";
 import { execFileSync } from "node:child_process";
-import { cp, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 export const siteUrl = "https://measureforge.pages.dev";
@@ -17,10 +18,24 @@ export async function prepareLegacy() {
     "styles.css", "favicon.svg", "social.png", "google017a65e37914063f.html"];
   await Promise.all(assets.map(name => cp(join(legacy, name), join(output, name), { recursive: true })));
 
-  const oldPaths = (await readdir(legacy, { recursive: true }))
-    .filter(name => name.endsWith(".html") && !["404.html", "google017a65e37914063f.html"].includes(name))
-    .sort();
-  const redirects = oldPaths.map(path => `/${path} ${path === "index.html" ? "/" : "/" + path.slice(0, -5)} 301`);
-  const verificationRule = (await readFile(join(legacy, "_redirects"), "utf8")).trim();
-  await writeFile(join(output, "_redirects"), [verificationRule, ...redirects, ""].join("\n"));
+  await mkdir(join(output, "fonts"), { recursive: true });
+  const fonts = [
+    ["open-sans", "open-sans"],
+    ["source-serif-4", "source-serif"],
+  ];
+  await Promise.all(fonts.map(async ([family, target]) => {
+    const directory = join("node_modules/@fontsource-variable", family);
+    await cp(join(directory, "files", family + "-latin-wght-normal.woff2"), join(output, "fonts", target + ".woff2"));
+    await cp(join(directory, "LICENSE"), join(output, "fonts", target + "-LICENSE.txt"));
+  }));
+  await cp("scripts/measureforge-ads.js", join(output, "measureforge-ads.js"));
+  await cp("scripts/generated-calculator.mjs", join(output, "generated-calculator.mjs"));
+  const model = await readFile("lib/new-calculations.ts", "utf8");
+  await writeFile(join(output, "new-calculations.mjs"), stripTypeScriptTypes(model));
+  const css = await readFile(join(legacy, "styles.css"), "utf8");
+  const siteCss = await readFile("scripts/measureforge.css", "utf8");
+  await writeFile(join(output, "styles.css"), css + "\n" + siteCss);
+
+  const verification = "google017a65e37914063f";
+  await cp(join(legacy, verification + ".html"), join(output, verification));
 }

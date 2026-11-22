@@ -73,6 +73,7 @@ try {
   browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined,
     args: ["--no-sandbox"] });
   const context = await browser.newContext({ locale: "en-IN" });
+  await context.route(/^https?:\/\/(?!127\.0\.0\.1:)/, route => route.abort());
   const jobs = ALL_TOOLS.map(tool => ({
     name: tool.slug, path: "/tools/" + tool.slug, form: "#tool-form",
     result: "#tool-result", samples: samples(tool),
@@ -86,10 +87,10 @@ try {
   ];
   jobs.push(...featured);
   for (const tool of jobs) {
-    if (tool.name === "flooring-pack-count" || tool.name === "raised-bed-soil-volume") {
+    if (tool.name === "flooring-pack-calculator" || tool.name === "raised-bed-soil-calculator") {
       tool.samples = tool.samples.map(values => ({ ...values, "purchase-price": 400,
         "purchase-delivery": 75, "purchase-currency": "INR",
-        ...(tool.name === "raised-bed-soil-volume" ? { "purchase-capacity": 40 } : {}),
+        ...(tool.name === "raised-bed-soil-calculator" ? { "purchase-capacity": 40 } : {}),
       }));
     }
   }
@@ -110,6 +111,7 @@ try {
             calculate(oldPage, form, result, values), calculate(newPage, form, result, values),
           ]);
           assert.equal(newResult, oldResult, `${name} ${JSON.stringify(values)}`);
+          if ("purchase-price" in values) assert.match(newResult, /Estimated order cost.*₹/s, name);
         }
       }
     } finally {

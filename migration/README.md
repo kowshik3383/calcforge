@@ -1,6 +1,6 @@
-# MeasureForge Next.js migration
+# MeasureForge migration checklist
 
-## Build and verify
+## Build and test
 
 Use Node.js 24.
 
@@ -11,22 +11,46 @@ npx playwright install chromium
 npm test
 ```
 
-Set `CHROMIUM_PATH` for the test command if Chromium is already installed separately. `npm run dev` runs the App Router locally. The Cloudflare Pages build command is `npm run build` (runs `next build`), the output directory is `out`, and the export needs no server. The build automatically prepares existing assets and produces `out/_redirects`.
+Set `CHROMIUM_PATH` if Chromium is already installed separately. Run the Cloudflare Pages emulator in a separate terminal, then run the preview test.
 
-## Calculator data
+```sh
+npx wrangler@4.166.0 pages dev out --ip 127.0.0.1 --port 8791
+node scripts/test-pages-preview.mjs
+```
 
-`lib/tools.ts` gives the template its typed view of the existing calculator registry. The source definitions in `static-site/catalog/tools/` contain each tool's fields, computation, worked examples, and FAQs. Updating a registry entry regenerates its tool page without editing a route component. The single editable data file and new tool families are scheduled for phases 3 and 4.
-
-## Phase 2 review
+## Results
 
 | Check | Result |
 | --- | --- |
-| Live sitemap inventory | 222 unique URLs captured in `legacy-paths.json` |
-| Exported content | 222 pages, including 107 catalog calculators and the existing guides and converters |
-| Legacy URL coverage | 221 indexed HTML paths use a 301 to the matching clean route. The home alias also redirects. The Google verification file keeps its existing path. |
-| Calculator parity | 327 exact rendered-result matches in Chromium at en-IN across 107 tool pages and two featured forms. Includes purchase estimates for flooring and raised-bed soil. |
-| Metadata smoke check | Every indexed export has one H1, a title, a description, and the expected canonical URL. |
-| Lighthouse | Pending phase 5. |
-| Manual review | Test Cloudflare's redirect responses and Google verification file on a preview deployment before promotion. Review editorial metadata and regional terminology in phase 3, especially land-unit terms with local definitions. |
+| Static export | 273 sitemap pages, covering all 222 legacy URLs plus 45 new calculator pages and six category pages. |
+| Legacy URLs | All 222 redirects, including the home alias, returned a 301 and then a 200 in Cloudflare's local Pages emulator. The Google verification endpoint returned a direct 200 and an unknown route returned 404. |
+| Calculator parity | 327 exact rendered-result matches across 107 existing tools and two featured forms in Chromium with the `en-IN` locale. Both purchase flows include an INR order total. |
+| New calculations | Ten browser checks cover conversions, negative temperatures, locally defined bigha and the three flooring variants. |
+| SEO | All 273 indexed pages passed title, description, H1, canonical, social tag and breadcrumb checks. The 152 tool pages passed application schema, FAQ count and 300 to 600 word checks. All 107 guides have Article or BlogPosting schema and tool links. |
+| Ads and consent | The publisher tag, `ads.txt`, privacy copy and lazy slot code are in the export. Consent and the slot ID require publisher-side setup. |
 
-The existing content and browser calculation modules remain the source of truth for parity. Production deploys the existing static frontend until the Next.js migration is approved. The phase 2 export omits the old advertising script while the AdSense and consent integration is pending.
+The committed Cloudflare redirect map is [public/_redirects](../public/_redirects). The [legacy inventory](legacy-paths.json) records paths from the production sitemap before the migration.
+
+## Manual review before production
+
+- Review the calculator copy and suggested links for editorial judgment. Pay special attention to land records and regional terminology for gunta, cent, ground, gaj and bigha. The bigha tools require a locally documented factor.
+- Confirm the AdSense publisher entry against the dashboard, configure the calculator ad unit ID, publish the consent message and test the ad experience in applicable regions. The performance checks do not load live advertising.
+- Confirm the production sitemap and Google verification in Search Console after the promotion.
+
+## Mobile Lighthouse
+
+Lighthouse 13.6 audited the optimized static export through the local Pages emulator using default mobile throttling. Google ad requests were blocked during the measurements. The results cover five representative pages.
+
+| Page | Performance | SEO | CLS |
+| --- | ---: | ---: | ---: |
+| Home | 99 | 100 | 0 |
+| Flooring pack calculator | 100 | 100 | 0 |
+| Gunta to square feet | 100 | 100 | 0 |
+| Flooring box coverage guide | 100 | 100 | 0 |
+| Unit conversion category | 100 | 100 | 0 |
+
+To repeat a measurement while Wrangler is running:
+
+```sh
+npx lighthouse http://127.0.0.1:8791/ --only-categories=performance,seo --chrome-flags="--headless" --blocked-url-patterns="*googlesyndication.com*"
+```

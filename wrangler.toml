@@ -1,6 +1,6 @@
 name = "measureforge"
 compatibility_date = "2026-01-01"
-pages_build_output_dir = "./static-site/dist"
+pages_build_output_dir = "./out"
 [observability]
 enabled = true
 

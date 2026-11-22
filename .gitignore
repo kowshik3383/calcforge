@@ -18,6 +18,8 @@ pnpm-debug.log*
 .vercel/
 .wrangler/
 static-site/dist/
-/public/
+/public/*
+!/public/ads.txt
 /next-env.d.ts
 *.tsbuildinfo
+!/public/_redirects

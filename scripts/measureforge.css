@@ -1,0 +1,26 @@
+@font-face {
+  font-family: "Open Sans";
+  src: url("/fonts/open-sans.woff2") format("woff2");
+  font-weight: 300 800;
+  font-style: normal;
+  font-display: optional;
+}
+@font-face {
+  font-family: "Source Serif";
+  src: url("/fonts/source-serif.woff2") format("woff2");
+  font-weight: 200 900;
+  font-style: normal;
+  font-display: optional;
+}
+:root {
+  --sans: "Open Sans", system-ui, sans-serif;
+  --serif: "Source Serif", Georgia, serif;
+}
+.calculator-ad { min-height: 100px; margin: 1.5rem 0; }
+@media (min-width: 720px) { .calculator-ad { min-height: 120px; } }
+.calculator-ad > .adsbygoogle { height: 100px; }
+@media (min-width: 720px) { .calculator-ad > .adsbygoogle { height: 120px; } }
+@media (min-width: 781px) { .nav #menu-toggle { display: none; } }
+@media (max-width: 780px) {
+  .nav #menu-toggle[aria-expanded="false"] + #main-menu { display: none; }
+}
