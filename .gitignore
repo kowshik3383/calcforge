@@ -17,9 +17,15 @@ pnpm-debug.log*
 .turbo/
 .vercel/
 .wrangler/
-static-site/dist/
 /public/*
 !/public/ads.txt
 /next-env.d.ts
 *.tsbuildinfo
 !/public/_redirects
+!/public/catalog-form.mjs
+!/public/purchase-estimate.mjs
+!/public/script.js
+!/public/styles.css
+!/public/favicon.svg
+!/public/social.png
+!/public/google017a65e37914063f.html

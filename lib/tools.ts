@@ -1,4 +1,4 @@
-import { ALL_TOOLS } from "../static-site/catalog/tools";
+import { ALL_TOOLS } from "./calculators/tools";
 import { convert, flooring, type Model } from "./new-calculations";
 
 type FAQ = { q: string; a: string };
@@ -11,6 +11,7 @@ export type Tool = {
   formulaText: string; workedExample: Example; faqs: FAQ[];
   relatedTools: string[]; category: string; description: string;
   howItWorks: string[]; examples: Example[]; alsoSearchedAs: string[];
+  inputs?: (typeof ALL_TOOLS)[number]["inputs"];
   model?: Model; exampleInput?: number;
 };
 
@@ -74,7 +75,7 @@ function legacyTool(raw: (typeof ALL_TOOLS)[number]): Tool {
   if (regionalTerms.length) howItWorks.push("For land measurements in Telangana, verify whether the record uses acres, gunta (also written guntha) or square yards. A gaj commonly refers to a square yard in property listings, but check that the listing describes area. Convert a recorded area separately before entering it in a field that expects a different unit.");
   const metaDescription = raw.seo.metaDescription.length < 155 && raw.seo.metaDescription.toLowerCase().includes(primaryKeyword)
     ? raw.seo.metaDescription : `Use the ${primaryKeyword} with ${first.label.toLowerCase()}. See the formula, a worked example and measurement checks.`;
-  return { slug, category, title, h1: title, description, primaryKeyword, secondaryKeywords,
+  return { slug, category, title, h1: title, description, inputs, primaryKeyword, secondaryKeywords,
     longTailKeywords: faqs.map(faq => faq.q), commonMisspellings: [misspelledQuery], regionalTerms,
     formulaText: formula, workedExample: example, examples: [example], faqs, relatedTools: raw.related,
     metaDescription: metaDescription.length < 155 ? metaDescription : `Use the ${primaryKeyword}. Check the formula, a worked example and input units.`,

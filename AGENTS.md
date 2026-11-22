@@ -37,7 +37,7 @@ Build free client-side micro-tools that capture organic Google traffic and monet
 - [ ] Apply to AdSense once ~15+ complete tool pages are live
 
 ## Tech stack
-Static HTML, CSS, and JavaScript in `static-site/`, with a Node.js build and client-side calculations.
+Next.js App Router with static export and client-side calculations. Editorial sources live in `content/pages/`.
 
 ## Repo
 https://github.com/kowshik3383/calcforge

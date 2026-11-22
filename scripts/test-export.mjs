@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { load } from "cheerio";
-import { siteUrl } from "./prepare-legacy.mjs";
+import { siteUrl } from "./prepare-assets.mjs";
 
 const current = load(await readFile("out/sitemap.xml", "utf8"), { xml: true });
 const redirects = new Map((await readFile("out/_redirects", "utf8")).trim().split("\n").map(line => {
@@ -68,7 +68,7 @@ for (const url of published) {
 }
 assert.deepEqual(redirects.get("/index.html"), { to: "/", status: 301 });
 assert.equal(await readFile("out/google017a65e37914063f.html", "utf8"),
-  await readFile("static-site/google017a65e37914063f.html", "utf8"));
+  await readFile("public/google017a65e37914063f.html", "utf8"));
 assert.match(await readFile("out/robots.txt", "utf8"), /Sitemap: https:\/\/measureforge\.pages\.dev\/sitemap\.xml/);
 assert.match(await readFile("out/ads.txt", "utf8"), /^google\.com, pub-\d{16}, DIRECT, f08c47fec0942fa0\n$/);
 assert.match(await readFile("out/404.html", "utf8"), /<h1[ >]/);

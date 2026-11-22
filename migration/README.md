@@ -11,7 +11,7 @@ npx playwright install chromium
 npm test
 ```
 
-Set `CHROMIUM_PATH` if Chromium is already installed separately. Run the Cloudflare Pages emulator in a separate terminal, then run the preview test.
+The calculator parity test builds the original site from a pinned Git commit in a temporary directory. Use a full clone, or run `git fetch --unshallow` if the baseline commit is missing. Set `CHROMIUM_PATH` if Chromium is already installed separately. Run the Cloudflare Pages emulator in a separate terminal, then run the preview test.
 
 ```sh
 npx wrangler@4.166.0 pages dev out --ip 127.0.0.1 --port 8791

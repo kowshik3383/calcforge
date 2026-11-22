@@ -1,9 +1,22 @@
 import assert from "node:assert/strict";
 import { createServer } from "node:http";
-import { readFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { extname, join } from "node:path";
 import { chromium } from "@playwright/test";
-import { ALL_TOOLS } from "../static-site/dist/catalog/tools/index.mjs";
+import { execFileSync } from "node:child_process";
+import { tmpdir } from "node:os";
+import { pathToFileURL } from "node:url";
+
+const baselineCommit = "1b678a7504cecf50892f2af49915262581520baa";
+const baseline = await mkdtemp(join(tmpdir(), "measureforge-baseline-"));
+async function prepareBaseline() {
+  const archive = execFileSync("git", ["archive", baselineCommit, "static-site"], { maxBuffer: 16 * 1024 * 1024 });
+  execFileSync("tar", ["-xf", "-", "-C", baseline], { input: archive });
+  execFileSync(process.execPath, ["static-site/build.mjs"], {
+    cwd: baseline, env: { ...process.env, SITE_URL: "https://measureforge.pages.dev" },
+  });
+  return join(baseline, "static-site/dist");
+}
 
 const contentTypes = { ".css": "text/css", ".js": "text/javascript", ".mjs": "text/javascript",
   ".html": "text/html; charset=utf-8", ".svg": "image/svg+xml", ".png": "image/png" };
@@ -67,9 +80,14 @@ async function calculate(page, formSelector, resultSelector, values) {
   return result;
 }
 
-const [legacy, next] = await Promise.all([serve("static-site/dist"), serve("out")]);
+let legacy;
+let next;
 let browser;
 try {
+  const baselineOutput = await prepareBaseline();
+  const { ALL_TOOLS } = await import(pathToFileURL(join(baselineOutput, "catalog/tools/index.mjs")).href);
+  legacy = await serve(baselineOutput);
+  next = await serve("out");
   browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined,
     args: ["--no-sandbox"] });
   const context = await browser.newContext({ locale: "en-IN" });
@@ -122,6 +140,7 @@ try {
   console.log(`Matched ${jobs.length * 3} browser results across ${jobs.length} calculator forms.`);
 } finally {
   await browser?.close();
-  legacy.server.close();
-  next.server.close();
+  legacy?.server.close();
+  next?.server.close();
+  await rm(baseline, { recursive: true, force: true });
 }

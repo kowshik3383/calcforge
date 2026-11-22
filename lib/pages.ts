@@ -4,10 +4,10 @@ import { join } from "node:path";
 import { cache } from "react";
 import { breadcrumb, faqSchema, home, pageMetadata } from "./seo";
 import { canonicalPath, siteUrl } from "./site";
-import { tools } from "./tools";
+import { categories, tools } from "./tools";
 
-const legacy = join(process.cwd(), "static-site/dist");
-export const pageSlugs = readdirSync(legacy)
+const content = join(process.cwd(), "content/pages");
+export const pageSlugs = readdirSync(content)
   .filter(file => file.endsWith(".html") && !["index.html", "404.html", "google017a65e37914063f.html"].includes(file))
   .map(file => file.slice(0, -5));
 
@@ -38,7 +38,7 @@ function suggestedTools(slug: string, title: string, body: string) {
 }
 
 export const readPage = cache((file: string) => {
-  const source = readFileSync(join(legacy, file), "utf8").replaceAll("CalcForge", "MeasureForge").replaceAll("CALCFORGE", "MEASUREFORGE");
+  const source = readFileSync(join(content, file), "utf8").replaceAll("https://example.com", siteUrl).replaceAll("CalcForge", "MeasureForge").replaceAll("CALCFORGE", "MEASUREFORGE");
   const $ = load(source);
   const title = $("title").text().replace(/ \| MeasureForge$/, "");
   const description = $('meta[name="description"]').attr("content") || "Browse MeasureForge calculators and measurement guides.";
@@ -58,7 +58,21 @@ export const readPage = cache((file: string) => {
   });
   $("#menu-toggle").removeAttr("hidden");
   $("header #main-menu").append('<li><a href="/categories">Categories</a></li>');
-  if (file === "calculators.html") $("#catalog").prepend('<p><a href="/categories">Browse calculators by category and unit</a></p>');
+  if (file === "calculators.html") {
+    const catalog = $('<div id="catalog"><p><a href="/categories">Browse calculators by category and unit</a></p></div>');
+    catalog.append($("<h2>").text(`All ${tools.length} calculators`));
+    for (const [slug, category] of Object.entries(categories)) {
+      const section = $('<section class="guide-group"><h2></h2><ul class="catalog-list"></ul></section>');
+      section.find("h2").text(category.title);
+      for (const tool of tools.filter(tool => tool.category === slug)) {
+        section.find("ul").append($("<li>").append($("<a>").attr("href", `/tools/${tool.slug}`).text(tool.title)));
+      }
+      catalog.append(section);
+    }
+    const marker = $("main > section").contents().filter((_, node) => node.type === "comment" && node.data.trim() === "calculator-catalog");
+    if (marker.length !== 1) throw new Error("Expected one calculator catalog marker.");
+    marker.replaceWith(catalog);
+  }
   if (article) {
     const candidates = suggestedTools(file.slice(0, -5), title, $("main").text());
     if (candidates.length) {
@@ -109,12 +123,9 @@ export const readPage = cache((file: string) => {
     });
     $("main > article, main > section").first().prepend(nav);
   }
-  const buyingHeading = $("main h2").filter((_, element) => $(element).text() === "Buying guides");
   return {
     metadata, schemas, body: $("body").html() ?? "",
     banner: $("body > .skip, body > header").toString(),
     footer: $("body > footer, body > [role=status], body > .toast").toString(),
-    calculator: $("main .grid, #purchase-supplier, main noscript").toString(),
-    buyingGuides: buyingHeading.toString() + buyingHeading.next("ul").toString(),
   };
 });

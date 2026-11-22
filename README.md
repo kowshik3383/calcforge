@@ -16,7 +16,7 @@ Use `npm run build` as the Cloudflare Pages build command and `out` as the outpu
 
 ## Add a tool
 
-For a conversion, add a row to `conversions` in [lib/tools.ts](lib/tools.ts) with a unique slug, input unit, output unit, multiplier, realistic example, and the two contexts that explain where the values come from and where they are used. Use the optional offset for affine conversions and require a documented local factor for variable units. For a flooring room variant, add a `roomTool` entry with the room dimensions, example pack coverage, allowance and a measurement or layout detail specific to that room. The tool route, sitemap, category listing and page metadata are generated from the same registry. A new family of formulas requires a calculation model. The existing calculator engines and editorial source pages remain in `static-site/` so they can be compared with the migration.
+For a conversion, add a row to `conversions` in [lib/tools.ts](lib/tools.ts) with a unique slug, input unit, output unit, multiplier, realistic example, and the two contexts that explain where the values come from and where they are used. Use the optional offset for affine conversions and require a documented local factor for variable units. For a flooring room variant, add a `roomTool` entry with the room dimensions, example pack coverage, allowance and a measurement or layout detail specific to that room. The tool route, sitemap, category listing and page metadata are generated from the same registry. A new family of formulas requires a calculation model. The calculator engines live in `lib/calculators/` and editorial page sources live in `content/pages/`.
 
 ## AdSense
 
