@@ -31,13 +31,13 @@ Build free client-side micro-tools that capture organic Google traffic and monet
 ## Tasks
 
 - [ ] Build all 24 tools (DONE — agriculture, construction, manufacturing, animal care)
-- [ ] Deploy to Cloudflare Pages (CI blocked by GitHub billing; wrangler.toml + workflow ready)
+- [ ] Deploy to the calcforge Cloudflare Pages project using GitHub Actions
 - [ ] Pick a design from Dribbble (e.g., Scappa Finance) and make the website utilize more visual illustrations
 - [ ] Verify search volume for top candidates before building more
 - [ ] Apply to AdSense once ~15+ complete tool pages are live
 
 ## Tech stack
-Next.js 15 + TypeScript + Tailwind v4, static-prerendered, client-side calculation, one domain `CalcForge`.
+Static HTML, CSS, and JavaScript in `static-site/`, with a Node.js build and client-side calculations.
 
 ## Repo
 https://github.com/kowshik3383/calcforge

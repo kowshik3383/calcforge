@@ -12,6 +12,8 @@ The homepage hero and calculator illustrations are original inline SVGs. Find th
 
 ## Deploy
 
+**Cloudflare Pages.** GitHub Actions builds with `SITE_URL=https://calcforge.pages.dev` and deploys `static-site/dist` to the `calcforge` project. Set `CF_ACCOUNT_ID` and `CF_API_TOKEN` in GitHub Actions secrets for the Cloudflare account that owns the project. The API token needs Account → Cloudflare Pages → Edit.
+
 **Vercel.** Import the repository with `main` as the production branch and `static-site` as Root Directory. Use the build command and output directory defined by `vercel.json` (`node build.mjs` and `dist`) and remove any previous blank build override. With system variables exposed, `VERCEL_PROJECT_PRODUCTION_URL` supplies the canonical host. If you use a custom domain, set `SITE_URL` to that full HTTPS URL before deploying. After publishing, submit the deployed `/sitemap.xml` in Google Search Console.
 
 **Branch or folder hosting**
@@ -25,8 +27,8 @@ The homepage hero and calculator illustrations are original inline SVGs. Find th
 - The newsletter saves one email in the current browser and offers a local delete control. Connect an email provider for subscriptions and confirmation emails.
 - Contact generates a downloadable draft and needs a real feedback endpoint for message delivery.
 - The documented builds replace the sample domain. Review the privacy and terms copy against your actual hosting and data flows.
-- The standalone site and Next.js share the 107-tool registry under `static-site/catalog`. The calculators page also retains its two featured forms.
-- An optional `calcforge:calculation` event exposes the tool ID to an analytics integration. No tracker is installed.
+- The site uses the 107-tool registry under `static-site/catalog`. The calculators page also retains its two featured forms.
+- An optional `calcforge:calculation` event exposes the tool ID to an analytics integration. No analytics tracker is installed.
 
 ## Purchase estimates and monetization
 
@@ -34,4 +36,4 @@ The Flooring Pack Count and Raised Bed Soil Volume pages offer purchase estimate
 
 The browser dispatches `calcforge:calculation` when a calculator returns a result and `calcforge:supplier-click` when a supplier link is clicked. Both expose the tool slug, and supplier events also expose direct versus affiliate. The events exclude measurements and prices. Connect them to your analytics provider to count completions and clicks, and check commissions in your affiliate dashboard.
 
-For display ads, connect your approved AdSense publisher account after the site is marked Ready. Leave spacing around inputs and results and start with a placement below the worked examples. The site currently contains no ad script.
+For display ads, connect your approved AdSense publisher account after the site is marked Ready. Leave spacing around inputs and results and start with a placement below the worked examples. The build includes the AdSense tag for `https://calcforge.pages.dev`.
