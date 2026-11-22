@@ -32,4 +32,13 @@ for (const name of await readdir(source)) {
 }
 for (const name of assets) await cp(join(source, name), join(output, name));
 await generateCatalog(output, base);
+if (url.origin === "https://calcforge.pages.dev") {
+  const adSenseTag = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2022115608131722" crossorigin="anonymous"></script>';
+  for (const name of await readdir(output, { recursive: true })) {
+    if (!name.endsWith(".html") || name === "404.html") continue;
+    const path = join(output, name);
+    const content = await readFile(path, "utf8");
+    await writeFile(path, content.replace("</head>", `  ${adSenseTag}\n</head>`));
+  }
+}
 console.log(`Built CalcForge for ${base}`);
