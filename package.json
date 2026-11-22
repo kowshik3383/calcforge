@@ -4,7 +4,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "test": "node scripts/test-export.mjs && node scripts/test-calculator-parity.mjs",
+    "test": "node scripts/test-planners.mjs && node scripts/test-export.mjs && node scripts/test-calculator-parity.mjs",
     "postbuild": "node scripts/optimize-export.mjs"
   },
   "dependencies": {

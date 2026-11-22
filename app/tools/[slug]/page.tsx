@@ -1,3 +1,4 @@
+import { planners } from "../../../lib/planners";
 import { notFound } from "next/navigation";
 import { CalculatorAd } from "../../../lib/ads";
 import { guidesForTool } from "../../../lib/pages";
@@ -34,6 +35,7 @@ export default async function Calculator({ params }: Props) {
   const items = [home, categoriesCrumb,
     { name: category.title, path: `/categories/${tool.category}` }, { name: tool.title, path }];
   const related = tool.relatedTools.flatMap(slug => tools.find(item => item.slug === slug) ?? []);
+  const planner = planners.find(item => "category" in item && item.category === tool.category);
   const guides = guidesForTool(tool.slug);
   return <PageShell items={items}>
     <Schemas values={[
@@ -48,6 +50,7 @@ export default async function Calculator({ params }: Props) {
     {tool.model ? <GeneratedCalculator model={tool.model} exampleInput={tool.exampleInput} />
       : <CalculatorForm tool={{ slug: tool.slug, inputs: tool.inputs! }} />}
     <CalculatorAd />
+    {planner && <p>Working on a project? <a href={`/planners/${planner.slug}`}>Open the {planner.title}</a>.</p>}
     <div className="prose" data-tool-editorial>
       <h2>How it works</h2>
       {tool.howItWorks.map((paragraph, index) => <p key={index}>{paragraph}</p>)}

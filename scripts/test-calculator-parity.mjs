@@ -105,6 +105,34 @@ try {
   assert.ok(await visibleTools.count() >= ALL_TOOLS.length);
   await catalog.close();
 
+  const planner = await context.newPage();
+  await planner.goto(next.origin + "/planners/flooring");
+  await planner.getByRole("button", { name: "Add room", exact: true }).click();
+  await planner.getByRole("button", { name: "Compare products", exact: true }).click();
+  await planner.getByText("40 m² to cover across 2 room(s).").waitFor();
+  await planner.getByRole("button", { name: "Save estimate", exact: true }).click();
+  await planner.getByLabel("Project name").fill("Test house");
+  await planner.getByRole("button", { name: "Save on this device" }).click();
+  await planner.getByText("Saved Test house on this device.").waitFor();
+  await planner.reload();
+  await planner.getByLabel("Saved projects").selectOption({ label: "Test house" });
+  await planner.getByRole("button", { name: "Open project" }).click();
+  await planner.getByRole("group", { name: "Room 2" }).waitFor();
+  await planner.getByRole("button", { name: "Compare products", exact: true }).click();
+  await planner.getByText("40 m² to cover across 2 room(s).").waitFor();
+
+  await planner.setViewportSize({ width: 390, height: 844 });
+  await planner.goto(next.origin + "/planners/archery");
+  await planner.getByLabel("Arrow scores separated by spaces or commas").fill("X, 8, M");
+  await planner.getByRole("button", { name: "Review scorecard", exact: true }).click();
+  await planner.getByText(/18\/600 · 3\/60 arrows · 1 Xs/).waitFor();
+  await planner.getByRole("button", { name: "Save and share", exact: true }).click();
+  await planner.getByRole("button", { name: "Save on this device" }).click();
+  await planner.getByRole("button", { name: "New project" }).click();
+  await planner.getByText("Practice history (1)").click();
+  await planner.getByRole("cell", { name: "18", exact: true }).waitFor();
+  await planner.close();
+
   const jobs = ALL_TOOLS.map(tool => ({
     name: tool.slug, path: "/tools/" + tool.slug, form: "#tool-form",
     result: "#tool-result", samples: samples(tool),
