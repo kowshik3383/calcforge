@@ -18,7 +18,7 @@ if (url.protocol !== "https:" || url.username || url.password || url.search || u
 }
 const base = url.href.replace(/\/+$/, "");
 const subpath = url.pathname.replace(/\/+$/, "");
-const assets = [".nojekyll", "favicon.svg", "script.js", "social.png", "styles.css"];
+const assets = [".nojekyll", "favicon.svg", "script.js", "social.png", "styles.css", "_redirects"];
 
 await rm(output, { recursive: true, force: true });
 await mkdir(output);
