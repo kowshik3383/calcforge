@@ -1,5 +1,5 @@
 name = "calcforge"
 compatibility_date = "2026-01-01"
-pages_build_output_dir = ".next/static"
+pages_build_output_dir = "./static-site/dist"
 [observability]
 enabled = true
