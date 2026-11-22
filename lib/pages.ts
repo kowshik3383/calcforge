@@ -37,9 +37,42 @@ function suggestedTools(slug: string, title: string, body: string) {
     .sort((first, second) => second.score - first.score).slice(0, 2).map(item => item.tool);
 }
 
+function readSource(file: string) {
+  return load(readFileSync(join(content, file), "utf8").replaceAll("https://example.com", siteUrl)
+    .replaceAll("CalcForge", "MeasureForge").replaceAll("CALCFORGE", "MEASUREFORGE"));
+}
+
+const guidesByTool = (() => {
+  const result = new Map<string, { path: string; title: string }[]>();
+  for (const slug of pageSlugs) {
+    const $ = readSource(slug + ".html");
+    if ($('meta[property="og:type"]').attr("content") !== "article") continue;
+    const guide = { path: "/" + slug, title: $("main h1").first().text() };
+    for (const { slug: tool } of suggestedTools(slug, guide.title, $("main").text())) {
+      const guides = result.get(tool) ?? [];
+      guides.push(guide);
+      result.set(tool, guides);
+    }
+  }
+  return result;
+})();
+
+export function guidesForTool(slug: string) {
+  return (guidesByTool.get(slug) ?? []).slice(0, 3);
+}
+
+const repoUrl = "https://github.com/kowshik3383/calcforge";
+
+function newsletterUrl() {
+  const value = process.env.NEWSLETTER_SIGNUP_URL;
+  if (!value) return null;
+  const url = new URL(value);
+  if (url.protocol !== "https:") throw new Error("NEWSLETTER_SIGNUP_URL must use HTTPS.");
+  return url.href;
+}
+
 export const readPage = cache((file: string) => {
-  const source = readFileSync(join(content, file), "utf8").replaceAll("https://example.com", siteUrl).replaceAll("CalcForge", "MeasureForge").replaceAll("CALCFORGE", "MEASUREFORGE");
-  const $ = load(source);
+  const $ = readSource(file);
   const title = $("title").text().replace(/ \| MeasureForge$/, "");
   const description = $('meta[name="description"]').attr("content") || "Browse MeasureForge calculators and measurement guides.";
   const canonical = $('link[rel="canonical"]').attr("href");
@@ -58,14 +91,36 @@ export const readPage = cache((file: string) => {
   });
   $("#menu-toggle").removeAttr("hidden");
   $("header #main-menu").append('<li><a href="/categories">Categories</a></li>');
+  const signup = newsletterUrl();
+  const updates = $('<p><a></a></p>');
+  updates.find("a").attr("href", signup ?? repoUrl + "/releases.atom")
+    .text(signup ? "Subscribe by email" : "Follow releases by RSS");
+  $("[data-newsletter]").prev("p").remove();
+  $("[data-newsletter]").prev("h3").text("Project updates");
+  $("[data-newsletter]").replaceWith(updates);
+  if (file === "contact.html") {
+    const address = process.env.CONTACT_EMAIL;
+    if (address && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(address)) {
+      throw new Error("CONTACT_EMAIL must be a public email address.");
+    }
+    const feedback = $('<p><a class="btn"></a></p>');
+    feedback.find("a").attr("href", address ? "mailto:" + address : repoUrl + "/issues/new")
+      .text(address ? "Email feedback" : "Open a public GitHub issue");
+    $("[data-contact]").next("p").text(address
+      ? "Your email app opens a message you can review and send."
+      : "GitHub requires an account. Keep personal details out of your report.");
+    $("[data-contact]").replaceWith(feedback);
+    $("#contact-preview").remove();
+  }
   if (file === "calculators.html") {
     const catalog = $('<div id="catalog"><p><a href="/categories">Browse calculators by category and unit</a></p></div>');
     catalog.append($("<h2>").text(`All ${tools.length} calculators`));
+    catalog.append($('<div class="field" data-catalog-filter hidden><label for="calculator-search">Search calculators</label><input id="calculator-search" type="search" autocomplete="off" placeholder="Try flooring or hectares"><p role="status"></p></div>'));
     for (const [slug, category] of Object.entries(categories)) {
       const section = $('<section class="guide-group"><h2></h2><ul class="catalog-list"></ul></section>');
       section.find("h2").text(category.title);
       for (const tool of tools.filter(tool => tool.category === slug)) {
-        section.find("ul").append($("<li>").append($("<a>").attr("href", `/tools/${tool.slug}`).text(tool.title)));
+        section.find("ul").append($("<li>").append($("<a>").attr("href", `/tools/${tool.slug}`).attr("data-search", tool.alsoSearchedAs.join(" ")).text(tool.title)));
       }
       catalog.append(section);
     }

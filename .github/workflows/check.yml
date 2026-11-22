@@ -1,0 +1,28 @@
+name: Verify MeasureForge
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+        env:
+          ADSENSE_TOOL_SLOT: "1234567890"
+      - run: npm test
+        env:
+          ADSENSE_TOOL_SLOT: "1234567890"

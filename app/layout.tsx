@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { publisher } from "../lib/ads";
+import { publisher, slot } from "../lib/ads";
 import { siteUrl } from "../lib/site";
 
 export const metadata: Metadata = {
@@ -19,6 +19,6 @@ export default function Layout({ children }: { children: ReactNode }) {
   </head><body>
     {children}
     <script src="/script.js" defer />
-    {process.env.ADSENSE_TOOL_SLOT && <script src="/measureforge-ads.js" defer />}
+    {slot && <script src="/measureforge-ads.js" defer />}
   </body></html>;
 }
