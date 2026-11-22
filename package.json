@@ -1,0 +1,22 @@
+{
+  "name": "measureforge",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev",
+    "test": "node scripts/test-export.mjs && node scripts/test-calculator-parity.mjs"
+  },
+  "dependencies": {
+    "cheerio": "1.2.0",
+    "next": "16.4.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^24",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5.9"
+  }
+}

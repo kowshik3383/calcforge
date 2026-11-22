@@ -1,0 +1,125 @@
+import assert from "node:assert/strict";
+import { createServer } from "node:http";
+import { readFile } from "node:fs/promises";
+import { extname, join } from "node:path";
+import { chromium } from "@playwright/test";
+import { ALL_TOOLS } from "../static-site/dist/catalog/tools/index.mjs";
+
+const contentTypes = { ".css": "text/css", ".js": "text/javascript", ".mjs": "text/javascript",
+  ".html": "text/html; charset=utf-8", ".svg": "image/svg+xml", ".png": "image/png" };
+
+async function serve(folder) {
+  const server = createServer(async (request, response) => {
+    const pathname = new URL(request.url, "http://localhost").pathname;
+    const filename = pathname === "/" ? "/index.html" : (extname(pathname) ? pathname : pathname + ".html");
+    try {
+      const data = await readFile(join(folder, filename));
+      response.writeHead(200, { "Content-Type": contentTypes[extname(filename)] || "application/octet-stream" });
+      response.end(data);
+    } catch {
+      response.writeHead(404).end();
+    }
+  });
+  await new Promise(resolve => server.listen(0, "127.0.0.1", resolve));
+  return { server, origin: `http://127.0.0.1:${server.address().port}` };
+}
+
+function samples(tool) {
+  const defaults = Object.fromEntries(tool.inputs.map(field => [field.key,
+    field.defaultValue ?? (field.type === "checkbox" ? false : field.options?.[0]?.value ?? 0)]));
+  const examples = tool.examples.map(example => ({ ...defaults, ...example.inputs }));
+  const seed = examples[0] ?? defaults;
+  const candidates = [...examples, defaults, ...[0.9, 1.1, 0.7, 1.3].map(multiplier => {
+    return Object.fromEntries(tool.inputs.map(field => {
+      if (field.type !== "number") return [field.key, seed[field.key]];
+      const original = Number(seed[field.key]);
+      const scaled = original > 0 ? original * multiplier : multiplier < 1 ? original : original + multiplier;
+      const rounded = field.step === 1 ? Math.round(scaled) : Number(scaled.toPrecision(10));
+      return [field.key, Math.max(field.min ?? -Infinity, Math.min(field.max ?? Infinity, rounded))];
+    }));
+  })];
+  const distinct = new Map(candidates.map(values => [JSON.stringify(values), values]));
+  const valid = [...distinct.values()].filter(values =>
+    tool.calculate(values).some(row => row.badge !== "warning") &&
+    tool.inputs.every(field => field.type !== "number" || (
+      Number(values[field.key]) >= (field.min ?? -Infinity) &&
+      Number(values[field.key]) <= (field.max ?? Infinity) &&
+      (field.step !== 1 || Number.isInteger(Number(values[field.key])))
+    )));
+  assert.ok(valid.length >= 3, `Three valid distinct inputs required for ${tool.slug}`);
+  return valid.slice(0, 3);
+}
+
+async function calculate(page, formSelector, resultSelector, values) {
+  await page.evaluate(({ formSelector, values }) => {
+    const form = document.querySelector(formSelector);
+    for (const [key, value] of Object.entries(values)) {
+      const field = form.elements.namedItem(key);
+      if (field.type === "checkbox") field.checked = Boolean(value);
+      else field.value = String(value);
+      field.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+    if (!form.checkValidity()) throw Error(`Sample fails browser validation: ${JSON.stringify(values)}`);
+    form.requestSubmit();
+  }, { formSelector, values });
+  const result = await page.locator(resultSelector).innerText();
+  assert.ok(result.trim() && !/will appear|enter measurements|calculate again/i.test(result), result);
+  return result;
+}
+
+const [legacy, next] = await Promise.all([serve("static-site/dist"), serve("out")]);
+let browser;
+try {
+  browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined,
+    args: ["--no-sandbox"] });
+  const context = await browser.newContext({ locale: "en-IN" });
+  const jobs = ALL_TOOLS.map(tool => ({
+    name: tool.slug, path: "/tools/" + tool.slug, form: "#tool-form",
+    result: "#tool-result", samples: samples(tool),
+  }));
+  const featured = [
+    { name: "featured field-area calculator", path: "/calculators", form: '[data-calculator="field"]',
+      result: "#field-result", samples: [{ length: 120, width: 80 }, { length: 100, width: 60 }, { length: 12.5, width: 8 }] },
+    { name: "featured flooring calculator", path: "/calculators", form: '[data-calculator="material"]',
+      result: "#material-result",
+      samples: [{ area: 24, coverage: 2.2, waste: 10 }, { area: 10, coverage: 2, waste: 0 }, { area: 21, coverage: 4, waste: 15 }] },
+  ];
+  jobs.push(...featured);
+  for (const tool of jobs) {
+    if (tool.name === "flooring-pack-count" || tool.name === "raised-bed-soil-volume") {
+      tool.samples = tool.samples.map(values => ({ ...values, "purchase-price": 400,
+        "purchase-delivery": 75, "purchase-currency": "INR",
+        ...(tool.name === "raised-bed-soil-volume" ? { "purchase-capacity": 40 } : {}),
+      }));
+    }
+  }
+  let index = 0;
+  const results = await Promise.allSettled(Array.from({ length: 4 }, async () => {
+    const [oldPage, newPage] = await Promise.all([context.newPage(), context.newPage()]);
+    try {
+      while (index < jobs.length) {
+        const { name, path, form, result, samples: cases } = jobs[index++];
+        const [oldResponse, newResponse] = await Promise.all([
+          oldPage.goto(legacy.origin + path + ".html"), newPage.goto(next.origin + path),
+        ]);
+        assert.equal(oldResponse?.status(), 200, name);
+        assert.equal(newResponse?.status(), 200, name);
+        await Promise.all([oldPage, newPage].map(page => page.locator(form + " button").waitFor()));
+        for (const values of cases) {
+          const [oldResult, newResult] = await Promise.all([
+            calculate(oldPage, form, result, values), calculate(newPage, form, result, values),
+          ]);
+          assert.equal(newResult, oldResult, `${name} ${JSON.stringify(values)}`);
+        }
+      }
+    } finally {
+      await Promise.all([oldPage.close(), newPage.close()]);
+    }
+  }));
+  for (const result of results) if (result.status === "rejected") throw result.reason;
+  console.log(`Matched ${jobs.length * 3} browser results across ${jobs.length} calculator forms.`);
+} finally {
+  await browser?.close();
+  legacy.server.close();
+  next.server.close();
+}
