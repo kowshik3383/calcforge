@@ -16,3 +16,5 @@ pnpm-debug.log*
 *.log
 .turbo/
 .vercel/
+.wrangler/
+static-site/dist/

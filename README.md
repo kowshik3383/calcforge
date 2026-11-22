@@ -10,4 +10,4 @@ Build and serve the 107-tool catalog with the commands in the static site README
 
 The [editorial plan](docs/calculator-content-plan.md) contains three query candidates for each calculator.
 
-GitHub Actions builds the static site and deploys it to [Cloudflare Pages](https://calcforge.pages.dev/).
+GitHub Actions builds the static site and deploys it to [Cloudflare Pages](https://measureforge.pages.dev/).
