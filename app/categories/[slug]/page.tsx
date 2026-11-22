@@ -1,3 +1,4 @@
+import { planners } from "../../../lib/planners";
 import { notFound } from "next/navigation";
 import { categoriesCrumb, home, pageMetadata } from "../../../lib/seo";
 import { PageShell } from "../../../lib/site-ui";
@@ -25,9 +26,11 @@ export async function generateMetadata({ params }: Props) {
 export default async function Category({ params }: Props) {
   const { slug } = await params;
   const category = getCategory(slug);
+  const planner = planners.find(item => "category" in item && item.category === slug);
   return <PageShell items={[home, categoriesCrumb, { name: category.title, path: `/categories/${slug}` }]}>
     <h1 className="page-title">{category.title}</h1>
     <p className="intro">{category.description}</p>
+    {planner && <p><a href={`/planners/${planner.slug}`}>{planner.title}</a></p>}
     <ul className="catalog-list">
       {tools.filter(tool => tool.category === slug).map(tool =>
         <li key={tool.slug}><a href={`/tools/${tool.slug}`}>{tool.title}</a></li>)}

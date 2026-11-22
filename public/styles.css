@@ -151,3 +151,37 @@ footer input:focus-visible {outline-color:var(--white)}
 @media (max-width: 780px) {
   .nav #menu-toggle[aria-expanded="false"] + #main-menu { display: none; }
 }
+
+.planner-card-title,.planner-heading {font-size:clamp(1.4rem,4vw,2.2rem)}
+[data-planner] {margin-block:1.5rem}
+.planner-actions {display:flex;align-items:end;flex-wrap:wrap;gap:.75rem;margin-block:1rem}
+.planner-actions > div {flex:1 1 14rem}
+.planner-steps {display:flex;gap:.55rem;flex-wrap:wrap;padding:0;margin:1.5rem 0;list-style:none}
+.planner-steps li {border:1px solid var(--line);border-radius:.65rem;padding:.45rem .75rem}
+.planner-steps [aria-current=step] {background:var(--mint);border-color:var(--ink);font-weight:750}
+.planner-fields {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr));gap:0 1rem}
+.planner-group {margin-block:1rem 1.6rem}
+.planner-row {min-width:0;margin:0 0 .8rem;padding:.7rem 1rem;border:1px solid var(--line);border-radius:.7rem;background:var(--white)}
+.planner-row legend {padding:0 .35rem;font-weight:750}
+.planner-table {overflow-x:auto;margin-block:1rem}
+.planner-table table {width:100%;border-collapse:collapse;background:var(--white);text-align:left}
+.planner-table caption {text-align:left;font-weight:850;padding:.4rem 0}
+.planner-table th,.planner-table td {border:1px solid var(--line);padding:.55rem .65rem;min-width:5rem;overflow-wrap:anywhere}
+.planner-table th {background:var(--paper)}
+.planner-diagrams {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:1rem;margin-block:1rem}
+.planner-diagrams figure {margin:0;background:var(--white);border:1px solid var(--line);border-radius:.65rem;padding:.75rem;break-inside:avoid}
+.planner-diagrams svg {display:block;width:100%;height:140px;overflow:visible}
+.planner-diagrams figcaption {margin-top:.4rem;text-align:center;font-weight:700}
+.planner-stock {fill:#fff}
+.planner-shape {fill:#b7f1d4;stroke:#142744;stroke-width:1;vector-effect:non-scaling-stroke}
+.planner-excluded {fill:#edf3ff;stroke-dasharray:4 2}
+.planner-offcut {fill:#edf3ff}
+.planner-plant {fill:#263eaa;stroke:none}
+@media print {
+  body:has([data-planner]) {background:#fff;color:#000}
+  body:has([data-planner]) :is(header,footer,.skip,.planner-controls,.toast),[data-planner] form {display:none!important}
+  body:has([data-planner]) .section {padding-block:0}
+  body:has([data-planner]) main > article > nav {display:none}
+  .planner-table {overflow:visible}
+  .planner-table tr {break-inside:avoid}
+}

@@ -91,6 +91,7 @@ export const readPage = cache((file: string) => {
   });
   $("#menu-toggle").removeAttr("hidden");
   $("header #main-menu").append('<li><a href="/categories">Categories</a></li>');
+  $('header #main-menu').append('<li><a href="/planners">Planners</a></li>');
   const signup = newsletterUrl();
   const updates = $('<p><a></a></p>');
   updates.find("a").attr("href", signup ?? repoUrl + "/releases.atom")
