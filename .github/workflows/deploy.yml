@@ -1,14 +1,7 @@
 name: Deploy to Cloudflare Pages
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
-    inputs:
-      create_project:
-        description: Create the Pages project before deploying
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -29,17 +22,10 @@ jobs:
       - name: Build Pages output
         run: node static-site/build.mjs
         env:
-          SITE_URL: ${{ vars.CLOUDFLARE_SITE_URL || 'https://calcforge-kowshik3383.pages.dev' }}
-
-      - name: Create Cloudflare Pages project
-        if: inputs.create_project
-        run: npx --yes wrangler@4.164.0 pages project create calcforge-kowshik3383 --production-branch=main
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          SITE_URL: https://calcforge.pages.dev
 
       - name: Deploy to Cloudflare Pages
-        run: npx --yes wrangler@4.164.0 pages deploy static-site/dist --project-name=calcforge-kowshik3383 --branch=main
+        run: npx --yes wrangler@4.164.0 pages deploy static-site/dist --project-name=calcforge --branch=main
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
