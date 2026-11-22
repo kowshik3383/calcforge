@@ -63,6 +63,17 @@ function samples(tool) {
   return valid.slice(0, 3);
 }
 
+async function assertFitsViewport(page) {
+  const { viewport, pageWidth } = await page.evaluate(async () => {
+    await document.fonts.ready;
+    return {
+      viewport: document.documentElement.clientWidth,
+      pageWidth: document.documentElement.scrollWidth,
+    };
+  });
+  assert.ok(pageWidth <= viewport, `${new URL(page.url()).pathname} overflows at ${viewport}px (${pageWidth}px)`);
+}
+
 async function calculate(page, formSelector, resultSelector, values) {
   await page.evaluate(({ formSelector, values }) => {
     const form = document.querySelector(formSelector);
@@ -106,24 +117,31 @@ try {
   await catalog.close();
 
   const planner = await context.newPage();
+  await planner.setViewportSize({ width: 320, height: 740 });
+  await planner.goto(next.origin + "/planners");
+  await assertFitsViewport(planner);
   await planner.goto(next.origin + "/planners/flooring");
+  await assertFitsViewport(planner);
   await planner.getByRole("button", { name: "Add room", exact: true }).click();
   await planner.getByRole("button", { name: "Compare products", exact: true }).click();
   await planner.getByText("40 m² to cover across 2 room(s).").waitFor();
+  await assertFitsViewport(planner);
   await planner.getByRole("button", { name: "Save estimate", exact: true }).click();
-  await planner.getByLabel("Project name").fill("Test house");
+  await planner.getByLabel("Project name").fill("Test house " + "A".repeat(80));
   await planner.getByRole("button", { name: "Save on this device" }).click();
-  await planner.getByText("Saved Test house on this device.").waitFor();
+  await planner.getByText(/^Saved Test house .* on this device/).waitFor();
+  await assertFitsViewport(planner);
   await planner.emulateMedia({ media: "print" });
   await planner.getByRole("button", { name: "Print report", exact: true }).waitFor({ state: "hidden" });
   await planner.getByRole("region", { name: "Supplier shopping list" }).waitFor();
   await planner.emulateMedia({ media: null });
   await planner.reload();
-  await planner.getByLabel("Saved projects").selectOption({ label: "Test house" });
+  await planner.getByLabel("Saved projects").selectOption({ label: "Test house " + "A".repeat(80) });
   await planner.getByRole("button", { name: "Open project" }).click();
   await planner.getByRole("group", { name: "Room 2" }).waitFor();
   await planner.getByRole("button", { name: "Compare products", exact: true }).click();
   await planner.getByText("40 m² to cover across 2 room(s).").waitFor();
+  await assertFitsViewport(planner);
 
   for (const [slug, action, output] of [
     ["land", "Compare and convert", "Plot measurement sheet"],
@@ -133,6 +151,7 @@ try {
     await planner.goto(next.origin + "/planners/" + slug);
     await planner.getByRole("button", { name: action, exact: true }).click();
     await planner.getByRole("region", { name: output, exact: true }).waitFor();
+    await assertFitsViewport(planner);
   }
 
   await planner.setViewportSize({ width: 390, height: 844 });
@@ -140,6 +159,7 @@ try {
   await planner.getByLabel("Arrow scores separated by spaces or commas").fill("X, 8, M");
   await planner.getByRole("button", { name: "Review scorecard", exact: true }).click();
   await planner.getByText(/18\/600 · 3\/60 arrows · 1 Xs/).waitFor();
+  await assertFitsViewport(planner);
   await planner.getByRole("button", { name: "Save and share", exact: true }).click();
   await planner.evaluate(() => {
     Object.defineProperty(navigator, "share", { value: async payload => { window.testScorecard = payload; } });
