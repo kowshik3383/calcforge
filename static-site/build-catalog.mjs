@@ -1,3 +1,4 @@
+import { purchaseTools } from "./purchase-estimate.mjs";
 import { stripTypeScriptTypes } from "node:module";
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
@@ -42,7 +43,34 @@ function formField(field) {
   return `<div class="field"><label for="${escape(id)}">${escape(label)}${unitLabel ? ` (${escape(unitLabel)})` : ""}</label>${input}${hint ? `<small id="${escape(id)}-hint">${escape(hint)}</small>` : ""}</div>`;
 }
 
+function purchaseFields(config) {
+  if (!config) return "";
+  const bag = config.unit === "bag";
+  return `<fieldset class="purchase-fields"><legend>Optional purchase estimate</legend>
+    ${bag ? '<div class="field"><label for="purchase-capacity">Bag volume (L)</label><input id="purchase-capacity" name="purchase-capacity" type="number" inputmode="decimal" min="0.01" max="10000" step="any" placeholder="40"></div>' : ""}
+    <div class="field"><label for="purchase-price">Price per ${config.unit}</label><input id="purchase-price" name="purchase-price" type="number" inputmode="decimal" min="0" max="100000000" step="any"></div>
+    <div class="field"><label for="purchase-delivery">Delivery charge</label><input id="purchase-delivery" name="purchase-delivery" type="number" inputmode="decimal" min="0" max="100000000" step="any"></div>
+    <div class="field"><label for="purchase-currency">Currency</label><select id="purchase-currency" name="purchase-currency"><option value="INR">INR</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="GBP">GBP</option></select></div>
+  </fieldset>`;
+}
+
+function supplierSection(config) {
+  if (!config) return "";
+  const affiliate = process.env[config.affiliateEnv]?.trim();
+  const target = new URL(affiliate || config.supplierUrl);
+  if (target.protocol !== "https:" || target.username || target.password) {
+    throw new Error(config.affiliateEnv + " must be an HTTPS URL without credentials.");
+  }
+  return `<section id="purchase-supplier" class="card purchase-supplier" aria-labelledby="supplier-heading" hidden>
+    <h2 id="supplier-heading">Check supplier options</h2>
+    <p>${escape(config.supplierNote)}</p>
+    ${affiliate ? "<p>Affiliate disclosure: CalcForge may earn a commission if you buy through this link.</p>" : ""}
+    <p><a href="${escape(target.href)}" data-supplier="${affiliate ? "affiliate" : "direct"}"${affiliate ? ' rel="sponsored"' : ""}>${affiliate ? "Visit supplier (affiliate link)" : escape(config.supplierName)} ↗</a></p>
+  </section>`;
+}
+
 function article(template, tool, base, registry) {
+  const purchase = purchaseTools[tool.slug];
   const canonical = `${base}/${toolUrl(tool.slug)}`;
   const title = tool.seo.h1 + " | CalcForge";
   const desc = tool.seo.metaDescription;
@@ -62,15 +90,17 @@ function article(template, tool, base, registry) {
   <h1 class="page-title">${escape(tool.seo.h1)}</h1><p class="intro">${escape(tool.description)}</p>
   <div class="grid">
     <form class="card" id="tool-form" data-tool="${escape(tool.slug)}">
-      <fieldset disabled><legend>Enter measurements</legend>${tool.inputs.map(formField).join("")}<button class="btn">Calculate</button></fieldset>
+      <fieldset disabled><legend>Enter measurements</legend>${tool.inputs.map(formField).join("")}${purchaseFields(purchase)}<button class="btn">Calculate</button></fieldset>
     </form>
     <div class="card"><h2 class="page-title">Result</h2><div id="tool-result" role="status">Enter measurements to calculate a result.</div></div>
   </div>
+  ${supplierSection(purchase)}
   <noscript><p>JavaScript is required to run the calculator. The formula and worked examples are below.</p></noscript>
   <div class="prose"><h2>Formula</h2><p>${escape(tool.formula)}</p>
     <h2>Worked examples</h2>${examples}
     <h2>Questions and assumptions</h2>${details}
     ${related.length ? `<h2>Related calculators</h2><ul>${related.map(other => `<li><a href="${escape(other.slug)}.html">${escape(other.title)}</a></li>`).join("")}</ul>` : ""}
+    ${purchase ? `<h2>Buying guides</h2><ul>${purchase.guides.map(([path, label]) => `<li><a href="../${escape(path)}">${escape(label)}</a></li>`).join("")}</ul>` : ""}
     <p><a href="../blog.html">Browse measurement and estimating guides</a></p>
   </div></article></main>`;
   return template
@@ -105,7 +135,9 @@ export async function generateCatalog(output, base) {
   await write(sitemapPath, sitemap.replace("</urlset>", tools.map(
     tool => `  <url><loc>${escape(base + "/" + toolUrl(tool.slug))}</loc></url>`
   ).join("\n") + "\n</urlset>"));
-  await write(join(output, "catalog-form.mjs"), await readFile(join(assets, "catalog-form.mjs"), "utf8"));
+  for (const name of ["catalog-form.mjs", "purchase-estimate.mjs"]) {
+    await write(join(output, name), await readFile(join(assets, name), "utf8"));
+  }
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

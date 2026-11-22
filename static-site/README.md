@@ -27,3 +27,11 @@ The homepage hero and calculator illustrations are original inline SVGs. Find th
 - The documented builds replace the sample domain. Review the privacy and terms copy against your actual hosting and data flows.
 - The standalone site and Next.js share the 107-tool registry under `static-site/catalog`. The calculators page also retains its two featured forms.
 - An optional `calcforge:calculation` event exposes the tool ID to an analytics integration. No tracker is installed.
+
+## Purchase estimates and monetization
+
+The Flooring Pack Count and Raised Bed Soil Volume pages offer purchase estimates based on the visitor’s own package size or price. Their default supplier links are direct links to India-based retailers and earn no commission. When you have approved affiliate links, set `FLOORING_AFFILIATE_URL` or `SOIL_AFFILIATE_URL` to the approved HTTPS URL in Vercel and redeploy. The generated page labels the link as affiliate and adds `rel="sponsored"`.
+
+The browser dispatches `calcforge:calculation` when a calculator returns a result and `calcforge:supplier-click` when a supplier link is clicked. Both expose the tool slug, and supplier events also expose direct versus affiliate. The events exclude measurements and prices. Connect them to your analytics provider to count completions and clicks, and check commissions in your affiliate dashboard.
+
+For display ads, connect your approved AdSense publisher account after the site is marked Ready. Leave spacing around inputs and results and start with a placement below the worked examples. The site currently contains no ad script.

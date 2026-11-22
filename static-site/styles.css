@@ -117,3 +117,10 @@ footer input:focus-visible {outline-color:var(--white)}
 .catalog-list li {break-inside:avoid;padding-block:.4rem}
 @media (max-width:900px) {.catalog-list {columns:2}}
 @media (max-width:520px) {.catalog-list {columns:1}}
+
+.purchase-fields {margin:1.25rem 0; padding-top:.5rem; border-top:1px solid var(--line)}
+.purchase-fields legend {font-weight:700}
+.purchase-supplier {margin-block:1.5rem}
+.purchase-supplier h2 {font-size:1.5rem}
+#tool-result dt {font-weight:700}
+#tool-result dd {margin:0 0 .75rem}
